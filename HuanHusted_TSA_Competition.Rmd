@@ -50,11 +50,17 @@ df_daily <- df %>%
 #ts transformation testing
 ts_df <- msts(df_proccessed)
 
+<<<<<<< HEAD
 #comment
 
 # push comment2 TSA
 # Commentssss
 # Next try
+=======
+
+#Comment 2
+
+>>>>>>> bdd2106b694248235e306d18e65e2be4d55b831f
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
