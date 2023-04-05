@@ -223,5 +223,50 @@ autoplot(ts_daily2010) +
   autolayer(ARIMA_Four_for2011, series="ARIMA_FOURIER",PI=FALSE) +
   ylab("Daily Data")
 
-print(ARIMA_Four_for2011$mean)
+#print(ARIMA_Four_for2011$mean)
+```
+## Model 4 Neural Network Time Series Forecasts 2010
+
+```{r Model 4 2010, message=FALSE, warning=FALSE}
+#NN_fit <- nnetar(ts_act_power_daily_train,p=1,P=1)
+NN_model <- nnetar(ts_daily,p=1,P=0,xreg=fourier(ts_daily, K=c(2,16)))
+
+#NN_for <- forecast(NN_fit, h=365) 
+NN_for <- forecast(NN_model, h=365,xreg=fourier(ts_act_power_daily_train, 
+                                          K=c(2,16),h=365))
+
+#Plot foresting results
+autoplot(NN_for) +
+  ylab("Daily_data") 
+
+#Plot model + observed data
+autoplot(ts_daily2010) +
+  autolayer(NN_for, series="Daily_data",PI=FALSE)+
+  ylab("Daily_data") 
+
+observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
+NN_scores1 <- accuracy(NN_for$mean,observed)
+print(NN_scores1)
+```
+
+## Model 4 Neural Network Time Series Forecasts 2011
+
+```{r Model 4 2011, message=FALSE, warning=FALSE}
+#NN_fit <- nnetar(ts_act_power_daily_train,p=1,P=1)
+NN_model2010 <- nnetar(ts_daily2010,p=1,P=0,xreg=fourier(ts_daily2010, K=c(2,16)))
+
+#NN_for <- forecast(NN_fit, h=365) 
+NN_for2010 <- forecast(NN_model2010, h=59,xreg=fourier(ts_daily, 
+                                          K=c(2,16),h=59))
+
+#Plot foresting results
+autoplot(NN_for2010) +
+  ylab("Daily_data") 
+
+#Plot model + observed data
+autoplot(ts_daily2010) +
+  autolayer(NN_for2010, series="Daily_data",PI=FALSE)+
+  ylab("Daily_data") 
+
+#print(NN_for2010$mean)
 ```
