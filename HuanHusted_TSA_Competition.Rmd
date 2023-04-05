@@ -33,14 +33,27 @@ library(kableExtra)
 Need to transform hourly data into daily data with aggregate and pipes.
 
 ```{r, Wrangle & Process Data}
+
 #Import data
 df <- read_xlsx("./Competition/Data/load.xlsx")
 
 #Wrangle and process the data from hourly to daily
+#use df_dailyV2 instead of df_daily
 df_daily <- df %>%
   mutate( Date = ymd(date)) %>%
   rowwise(date) %>%
   summarise(daily_data = mean(c_across(h1:h24)))
+
+#Second way to wrangle data from hourly to daily
+#use df_dailyV2 instead of df_daily
+df_dailyV2 <- df %>%
+  mutate( Date = ymd(date)) %>%
+  select(3:26) %>%
+  mutate(rowMeans(df_dailyV2)) %>%
+  rename(Daily_data = "rowMeans(df_dailyV2)")
+
+date <- df[,2]
+df_dailyV2 <- cbind(date, df_dailyV2$Daily_data)
 
 ```
 
