@@ -107,3 +107,17 @@ ts_decompose <- ts_daily %>%
 plot(ts_decompose)
 
 ```
+## Model 1 STL: Forecast 2010
+
+```{r Model 1, message=FALSE, warning=FALSE}
+#Fit and forecast STL model 
+ETS_model <-  stlf(ts_daily,h=365)
+
+#Plot foresting
+autoplot(ETS_model) + ylab("Forecast")
+
+#Plot model + observed data
+autoplot(ts_daily2010) +
+  autolayer(ETS_model, series="STL Model",PI=FALSE) +
+  ylab("Daily Data")
+```
