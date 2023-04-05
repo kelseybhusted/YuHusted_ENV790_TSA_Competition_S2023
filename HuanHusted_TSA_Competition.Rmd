@@ -121,3 +121,19 @@ autoplot(ts_daily2010) +
   autolayer(ETS_model, series="STL Model",PI=FALSE) +
   ylab("Daily Data")
 ```
+
+## Model 1 STL: Forecast 2011
+```{r Model 1, message=FALSE, warning=FALSE}
+#Fit and forecast STL model January 1st to February 28th 2011
+ETS_model2010 <-  stlf(ts_daily2010,h=59)
+
+#Plot foresting
+autoplot(ETS_model2010) + ylab("Forecast")
+
+#Plot model + observed data
+autoplot(ts_daily2010) +
+  autolayer(ETS_model2010, series="STL Model",PI=FALSE) +
+  ylab("Daily Data")
+```
+## Model 2 TBATS: Forecast 2010
+
