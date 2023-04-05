@@ -28,17 +28,16 @@ library(zoo)
 library(kableExtra)
 ```
 
-## Wrangling and processing the data
+## Wrangling and processing the data 2005-2009
 
 Need to transform hourly data into daily data with aggregate and pipes.
 
-```{r, Wrangle & Process Data}
-
+```{r, Wrangle & Process Data 2005-2009}
 #Import data
 df <- read_xlsx("./Competition/Data/load.xlsx")
 
 #Wrangle data from hourly to daily
-#Wrangling date column 
+#Wrangling date column 2005 to 2009
 df_daily <- df %>%
   mutate( Date = ymd(date)) %>%
   filter(Date < '2010-01-01')
@@ -58,7 +57,7 @@ df_processed <- df_dailyV2 %>%
 #Combining data and daily data
 date <- df_daily[,2]
 df_processed <- cbind(date, df_processed)
-
+         
 ```
 
 ## Create a time series object
