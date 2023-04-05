@@ -37,13 +37,6 @@ Need to transform hourly data into daily data with aggregate and pipes.
 #Import data
 df <- read_xlsx("./Competition/Data/load.xlsx")
 
-#Wrangle and process the data from hourly to daily
-#use df_dailyV2 instead of df_daily
-df_daily <- df %>%
-  mutate( Date = ymd(date)) %>%
-  rowwise(date) %>%
-  summarise(daily_data = mean(c_across(h1:h24)))
-
 #Second way to wrangle data from hourly to daily
 #use df_dailyV2 instead of df_daily
 df_dailyV2 <- df %>%
