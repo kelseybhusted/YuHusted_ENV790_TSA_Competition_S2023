@@ -32,7 +32,7 @@ library(kableExtra)
 
 Need to transform hourly data into daily data with aggregate and pipes.
 
-```{r Wrangle & Process Data 2005-2009}
+```{r Wrangle & Process Data 2005-2009, message=FALSE, warning=FALSE}
 #Import data
 df <- read_xlsx("./Competition/Data/load.xlsx")
 
@@ -62,7 +62,7 @@ df_processed <- cbind(date, df_processed)
 
 ## Wrangling and processing the data 2005-2010
 
-```{r Wrangle & Process Data 2005-2010}
+```{r Wrangle & Process Data 2005-2010, message=FALSE, warning=FALSE}
 
 #Wrangle data from hourly to daily
 #Wrangling date column 2005 to 2010
@@ -97,5 +97,13 @@ ts_daily2010 <- msts(df_processed2010$Daily_data,
                  start=c(2005, 01, 01))
 ```
 
+## Decompose time series
 
+```{r Decompose, message=FALSE, warning=FALSE}
 
+#Decompose time series 
+ts_decompose <- ts_daily %>%
+  mstl()
+plot(ts_decompose)
+
+```
