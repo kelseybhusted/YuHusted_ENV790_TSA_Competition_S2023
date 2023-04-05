@@ -63,17 +63,12 @@ df_processed <- cbind(date, df_processed)
 
 ## Create a time series object
 
-```{r ts, echo=FALSE}
-#ts transformation testing
-ts_df <- msts(df_proccessed)
+```{r, ts}
+#ts transformation 
+ts_daily <- msts(df_processed$Daily_data,
+                 seasonal.periods=c(7,365.25),
+                 start=c(2005, 01, 01))
 
-
-#Comment 2
-  
-
-
-
-# Comments new token  
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
