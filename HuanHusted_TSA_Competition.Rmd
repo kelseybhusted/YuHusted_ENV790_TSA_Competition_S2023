@@ -57,7 +57,8 @@ df_processed <- df_dailyV2 %>%
 #Combining data and daily data
 date <- df_daily[,2]
 df_processed <- cbind(date, df_processed)
-         
+
+nobs = nrow(df_daily)           
 ```
 
 ## Wrangling and processing the data 2005-2010
@@ -66,7 +67,7 @@ df_processed <- cbind(date, df_processed)
 
 #Wrangle data from hourly to daily
 #Wrangling date column 2005 to 2010
-#removing no numeric columns so rowMeans() functino will work
+#removing no numeric columns so rowMeans() function will work
 df_daily2010 <- df %>%
   mutate( Date = ymd(date)) %>%
   select(3:26)
@@ -78,9 +79,10 @@ df_processed2010 <- df_daily2010 %>%
   select(25)
 
 #Combining data and daily data
-date <- df_daily2010[,2]
+date <- df[,2]
 df_processed2010 <- cbind(date, df_processed2010)
-         
+
+nobs2010 = nrow(df_processed2010)        
 ```
 
 ## Create a time series object
@@ -120,6 +122,12 @@ autoplot(ETS_model) + ylab("Forecast")
 autoplot(ts_daily2010) +
   autolayer(ETS_model, series="STL Model",PI=FALSE) +
   ylab("Daily Data")
+
+#Check accuracy of model
+n_for <- 59
+observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
+ETS_scores <- accuracy(ETS_model$mean,observed)
+print(ETS_scores)
 ```
 
 ## Model 1 STL: Forecast 2011
@@ -181,6 +189,11 @@ autoplot(ARIMA_Four_for) + ylab("Daily Data")
 autoplot(ts_daily2010) +
   autolayer(ARIMA_Four_for, series="ARIMA_FOURIER",PI=FALSE) +
   ylab("Daily Data")
+
+#Check accuracy of model
+observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
+ARIMA_Four_scores <- accuracy(ARIMA_Four_for$mean,observed)
+print(ARIMA_Four_scores)
 ```
 
 ## Model 3 ARIMA + FOURIER terms: Forecast 2011
