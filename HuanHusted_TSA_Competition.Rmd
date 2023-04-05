@@ -222,4 +222,6 @@ autoplot(ARIMA_Four_for2011) + ylab("Daily Data")
 autoplot(ts_daily2010) +
   autolayer(ARIMA_Four_for2011, series="ARIMA_FOURIER",PI=FALSE) +
   ylab("Daily Data")
+
+print(ARIMA_Four_for2011$mean)
 ```
