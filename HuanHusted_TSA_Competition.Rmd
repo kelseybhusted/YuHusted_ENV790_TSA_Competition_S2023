@@ -60,6 +60,29 @@ df_processed <- cbind(date, df_processed)
          
 ```
 
+## Wrangling and processing the data 2005-2010
+
+```{r, Wrangle & Process Data 2005-2010}
+
+#Wrangle data from hourly to daily
+#Wrangling date column 2005 to 2010
+#removing no numeric columns so rowMeans() functino will work
+df_daily2010 <- df %>%
+  mutate( Date = ymd(date)) %>%
+  select(3:26)
+
+#Creating daily data
+df_processed2010 <- df_daily2010 %>%  
+  mutate(rowMeans(df_daily2010)) %>%
+  rename(Daily_data = "rowMeans(df_daily2010)") %>%
+  select(25)
+
+#Combining data and daily data
+date <- df_daily2010[,2]
+df_processed2010 <- cbind(date, df_processed2010)
+         
+```
+
 ## Create a time series object
 
 ```{r, ts}
