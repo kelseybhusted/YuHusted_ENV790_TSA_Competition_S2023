@@ -37,16 +37,27 @@ Need to transform hourly data into daily data with aggregate and pipes.
 #Import data
 df <- read_xlsx("./Competition/Data/load.xlsx")
 
-#Second way to wrangle data from hourly to daily
-#use df_dailyV2 instead of df_daily
+#Wrangle data from hourly to daily
+#Wrangling date column 
+df_daily <- df %>%
+  mutate( Date = ymd(date)) %>%
+  filter(Date < '2010-01-01')
+
+#removing no numeric columns so rowMeans() functino will work
 df_dailyV2 <- df %>%
   mutate( Date = ymd(date)) %>%
-  select(3:26) %>%
-  mutate(rowMeans(df_dailyV2)) %>%
-  rename(Daily_data = "rowMeans(df_dailyV2)")
+  filter(Date < '2010-01-01') %>%
+  select(3:26)
 
-date <- df[,2]
-df_dailyV2 <- cbind(date, df_dailyV2$Daily_data)
+#Creating daily data
+df_processed <- df_dailyV2 %>%  
+  mutate(rowMeans(df_dailyV2)) %>%
+  rename(Daily_data = "rowMeans(df_dailyV2)") %>%
+  select(25)
+
+#Combining data and daily data
+date <- df_daily[,2]
+df_processed <- cbind(date, df_processed)
 
 ```
 
