@@ -123,7 +123,7 @@ autoplot(ts_daily2010) +
 ```
 
 ## Model 1 STL: Forecast 2011
-```{r Model 1, message=FALSE, warning=FALSE}
+```{r Model 1 2011, message=FALSE, warning=FALSE}
 #Fit and forecast STL model January 1st to February 28th 2011
 ETS_model2011 <-  stlf(ts_daily2010,h=59)
 
@@ -155,3 +155,58 @@ autoplot(ts_daily2010) +
 ```
 # This model looks like a bad fit so I won't forecast for 2011.
 
+## Model 3 ARIMA + FOURIER terms: Forecast 2010
+
+```{r Model 3, message=FALSE, warning=FALSE}
+#Fit and forecast TBATS model 
+ARIMA_Four_model <- auto.arima(ts_daily, 
+                             seasonal=FALSE, 
+                             lambda=0,
+                             xreg=fourier(ts_daily, 
+                                          K=c(2,12))
+                             )
+
+#Forecast
+ARIMA_Four_for <- forecast(ARIMA_Four_model,
+                           xreg=fourier(ts_daily,
+                                        K=c(2,12),
+                                        h=365),
+                           h=365
+                           ) 
+
+#Plot foresting results
+autoplot(ARIMA_Four_for) + ylab("Daily Data")
+
+#Plot model + observed data
+autoplot(ts_daily2010) +
+  autolayer(ARIMA_Four_for, series="ARIMA_FOURIER",PI=FALSE) +
+  ylab("Daily Data")
+```
+
+## Model 3 ARIMA + FOURIER terms: Forecast 2011
+
+```{r Model 3 2011, message=FALSE, warning=FALSE}
+#Fit and forecast TBATS model 
+ARIMA_Four_model2011 <- auto.arima(ts_daily2010, 
+                             seasonal=FALSE, 
+                             lambda=0,
+                             xreg=fourier(ts_daily2010, 
+                                          K=c(2,12))
+                             )
+
+#Forecast
+ARIMA_Four_for2011 <- forecast(ARIMA_Four_model,
+                           xreg=fourier(ts_daily2010,
+                                        K=c(2,12),
+                                        h=59),
+                           h=59
+                           ) 
+
+#Plot foresting results
+autoplot(ARIMA_Four_for2011) + ylab("Daily Data")
+
+#Plot model + observed data
+autoplot(ts_daily2010) +
+  autolayer(ARIMA_Four_for2011, series="ARIMA_FOURIER",PI=FALSE) +
+  ylab("Daily Data")
+```
