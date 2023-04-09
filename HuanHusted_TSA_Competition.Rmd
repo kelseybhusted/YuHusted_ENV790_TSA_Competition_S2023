@@ -6,7 +6,7 @@ output: pdf_document
 ---
 
 
-```{r setup, include=FALSE}
+```{r setup,warning=FALSE, message=FALSE}
 knitr::opts_chunk$set(echo = TRUE,tidy.opts=list(width.cutoff=80), tidy=FALSE) 
 ```
 
@@ -28,9 +28,9 @@ library(zoo)
 library(kableExtra)
 ```
 
-## Wrangling and processing the data 2005-2009
+## Data wrangling and processing from 2005-2009
 
-Need to transform hourly data into daily data with aggregate and pipes.
+Hourly data was transformed into daily data with aggregate functions and pipes (i.e., tidyvers).
 
 ```{r Wrangle & Process Data 2005-2009, message=FALSE, warning=FALSE}
 #Import data
@@ -61,7 +61,9 @@ df_processed <- cbind(date, df_processed)
 nobs = nrow(df_daily)           
 ```
 
-## Wrangling and processing the data 2005-2010
+## Data wrangling and processing from 2005-2010
+
+The data needs to be formatted to include 2010 as well since the objective is to forecast for 2011.
 
 ```{r Wrangle & Process Data 2005-2010, message=FALSE, warning=FALSE}
 
@@ -85,7 +87,7 @@ df_processed2010 <- cbind(date, df_processed2010)
 nobs2010 = nrow(df_processed2010)        
 ```
 
-## Create a time series object
+## Time series object transformation
 
 ```{r ts, message=FALSE, warning=FALSE}
 #ts transformation 2005 to 2009
@@ -99,7 +101,7 @@ ts_daily2010 <- msts(df_processed2010$Daily_data,
                  start=c(2005, 01, 01))
 ```
 
-## Decompose time series
+## Time series decomposition
 
 ```{r Decompose, message=FALSE, warning=FALSE}
 
@@ -225,7 +227,7 @@ autoplot(ts_daily2010) +
 
 #print(ARIMA_Four_for2011$mean)
 ```
-## Model 4 Neural Network Time Series Forecasts 2010
+## Model 4 Neural Network Time Series: Forecasts 2010
 
 ```{r Model 4 2010, message=FALSE, warning=FALSE}
 #NN_fit <- nnetar(ts_act_power_daily_train,p=1,P=1)
@@ -244,12 +246,15 @@ autoplot(ts_daily2010) +
   autolayer(NN_for, series="Daily_data",PI=FALSE)+
   ylab("Daily_data") 
 
+#Checking error variables to decide which model fits the data the best
 observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
 NN_scores1 <- accuracy(NN_for$mean,observed)
 print(NN_scores1)
 ```
 
-## Model 4 Neural Network Time Series Forecasts 2011
+## Model 4 Neural Network Time Series: Forecasts 2011
+
+ > Note: Based on the error variables calculated with the accuracy() function, the Neural Network model seems to fit the data the best.
 
 ```{r Model 4 2011, message=FALSE, warning=FALSE}
 #NN_fit <- nnetar(ts_act_power_daily_train,p=1,P=1)
