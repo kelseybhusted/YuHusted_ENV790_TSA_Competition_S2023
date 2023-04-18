@@ -5,6 +5,7 @@ date: "2023-03-31"
 output: pdf_document
 ---
 
+## Time Series Competition
 
 ```{r setup,warning=FALSE, message=FALSE}
 knitr::opts_chunk$set(echo = TRUE,tidy.opts=list(width.cutoff=80), tidy=FALSE) 
@@ -30,7 +31,7 @@ library(kableExtra)
 
 ## Data wrangling and processing from 2005-2009
 
-Hourly data was transformed into daily data with aggregate functions and pipes (i.e., tidyvers).
+Hourly data was transformed into daily data with aggregate functions and pipes (i.e., tidyverse).
 
 ```{r Wrangle & Process Data 2005-2009, message=FALSE, warning=FALSE}
 #Import data
@@ -54,7 +55,7 @@ df_processed <- df_dailyV2 %>%
   rename(Daily_data = "rowMeans(df_dailyV2)") %>%
   select(25)
 
-#Combining data and daily data
+#Combining date and daily data
 date <- df_daily[,2]
 df_processed <- cbind(date, df_processed)
 
@@ -64,6 +65,7 @@ nobs = nrow(df_daily)
 ## Data wrangling and processing from 2005-2010
 
 The data needs to be formatted to include 2010 as well since the objective is to forecast for 2011.
+Instead of making two separate datasets, I should use the window() function for future reference.
 
 ```{r Wrangle & Process Data 2005-2010, message=FALSE, warning=FALSE}
 
@@ -101,7 +103,7 @@ ts_daily2010 <- msts(df_processed2010$Daily_data,
                  start=c(2005, 01, 01))
 ```
 
-## Time series decomposition
+## Time series decomposition and plot
 
 ```{r Decompose, message=FALSE, warning=FALSE}
 
@@ -111,7 +113,7 @@ ts_decompose <- ts_daily %>%
 plot(ts_decompose)
 
 ```
-## Model 1 STL: Forecast 2010
+## Model 1 STL + ETS: Forecast 2010
 
 ```{r Model 1, message=FALSE, warning=FALSE}
 #Fit and forecast STL model 
@@ -132,7 +134,8 @@ ETS_scores <- accuracy(ETS_model$mean,observed)
 print(ETS_scores)
 ```
 
-## Model 1 STL: Forecast 2011
+## Model 1 STL + ETS: Forecast 2011
+
 ```{r Model 1 2011, message=FALSE, warning=FALSE}
 #Fit and forecast STL model January 1st to February 28th 2011
 ETS_model2011 <-  stlf(ts_daily2010,h=59)
@@ -146,7 +149,10 @@ autoplot(ts_daily2010) +
   ylab("Daily Data")
 ```
 
+
 ## Model 2 TBATS: Forecast 2010
+
+# This model looks like a reakky bad fit visually, so I won't forecast for 2011.
 
 ```{r Model 2, message=FALSE, warning=FALSE}
 #Fit and forecast TBATS model 
@@ -162,8 +168,11 @@ autoplot(TBATS_model) + ylab("Forecast")
 autoplot(ts_daily2010) +
   autolayer(TBATS_for, series="TBATS Model",PI=FALSE) +
   ylab("Daily Data")
+
+observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
+ARIMA_Four_scores <- accuracy(ARIMA_Four_for$mean,observed)
+print(ARIMA_Four_scores)
 ```
-# This model looks like a bad fit so I won't forecast for 2011.
 
 ## Model 3 ARIMA + FOURIER terms: Forecast 2010
 
