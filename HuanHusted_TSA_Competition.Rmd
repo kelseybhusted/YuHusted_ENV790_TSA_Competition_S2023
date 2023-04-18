@@ -128,10 +128,11 @@ autoplot(ts_daily2010) +
   ylab("Daily Data")
 
 #Check accuracy of model
-n_for <- 59
+n_for <- 365
 observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
 ETS_scores <- accuracy(ETS_model$mean,observed)
 print(ETS_scores)
+
 ```
 
 ## Model 1 STL + ETS: Forecast 2011
@@ -147,12 +148,18 @@ autoplot(ETS_model2011) + ylab("Forecast")
 autoplot(ts_daily2010) +
   autolayer(ETS_model2011, series="STL Model",PI=FALSE) +
   ylab("Daily Data")
+
+#Check accuracy of model
+n_for <- 59
+observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
+ETS_scores <- accuracy(ETS_model2011$mean,observed)
+print(ETS_scores)
 ```
 
 
 ## Model 2 TBATS: Forecast 2010
 
-# This model looks like a reakky bad fit visually, so I won't forecast for 2011.
+# The model looks like a really bad fit visually and will not be used to forecast for 2011.
 
 ```{r Model 2, message=FALSE, warning=FALSE}
 #Fit and forecast TBATS model 
@@ -169,9 +176,7 @@ autoplot(ts_daily2010) +
   autolayer(TBATS_for, series="TBATS Model",PI=FALSE) +
   ylab("Daily Data")
 
-observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
-ARIMA_Four_scores <- accuracy(ARIMA_Four_for$mean,observed)
-print(ARIMA_Four_scores)
+
 ```
 
 ## Model 3 ARIMA + FOURIER terms: Forecast 2010
@@ -202,6 +207,7 @@ autoplot(ts_daily2010) +
   ylab("Daily Data")
 
 #Check accuracy of model
+n_for <- 365
 observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
 ARIMA_Four_scores <- accuracy(ARIMA_Four_for$mean,observed)
 print(ARIMA_Four_scores)
