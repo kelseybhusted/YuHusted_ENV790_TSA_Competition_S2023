@@ -246,11 +246,11 @@ autoplot(ts_daily2010) +
 
 ```{r Model 4 2010, message=FALSE, warning=FALSE}
 #NN_fit <- nnetar(ts_act_power_daily_train,p=1,P=1)
-NN_model <- nnetar(ts_daily,p=1,P=0,xreg=fourier(ts_daily, K=c(2,16)))
+NN_model <- nnetar(ts_daily,decay=0.5, maxit=150, p=1,P=0,xreg=fourier(ts_daily, K=c(2,12)))
 
 #NN_for <- forecast(NN_fit, h=365) 
 NN_for <- forecast(NN_model, h=365,xreg=fourier(ts_daily, 
-                                          K=c(2,16),h=365))
+                                          K=c(2,12),h=365))
 
 #Plot foresting results
 autoplot(NN_for) +
@@ -273,11 +273,11 @@ print(NN_scores1)
 
 ```{r Model 4 2011, message=FALSE, warning=FALSE}
 #NN_fit <- nnetar(ts_act_power_daily_train,p=1,P=1)
-NN_model2010 <- nnetar(ts_daily2010,p=1,P=0,xreg=fourier(ts_daily2010, K=c(2,16)))
+NN_model2010 <- nnetar(ts_daily2010,decay=0.5, maxit=150,p=1,P=0,xreg=fourier(ts_daily2010, K=c(2,12)))
 
 #NN_for <- forecast(NN_fit, h=365) 
 NN_for2010 <- forecast(NN_model2010, h=59,xreg=fourier(ts_daily, 
-                                          K=c(2,16),h=59))
+                                          K=c(2,12),h=59))
 
 #Plot foresting results
 autoplot(NN_for2010) +
@@ -288,5 +288,5 @@ autoplot(ts_daily2010) +
   autolayer(NN_for2010, series="Daily_data",PI=FALSE)+
   ylab("Daily_data") 
 
-#print(NN_for2010$mean)
+print(NN_for2010$mean)
 ```
