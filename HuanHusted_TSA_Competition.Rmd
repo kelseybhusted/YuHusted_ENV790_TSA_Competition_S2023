@@ -225,7 +225,7 @@ ARIMA_Four_model2011 <- auto.arima(ts_daily2010,
                              )
 
 #Forecast
-ARIMA_Four_for2011 <- forecast(ARIMA_Four_model,
+ARIMA_Four_for2011 <- forecast(ARIMA_Four_model2011,
                            xreg=fourier(ts_daily2010,
                                         K=c(2,12),
                                         h=59),
