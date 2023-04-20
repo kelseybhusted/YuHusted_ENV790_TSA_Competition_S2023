@@ -249,7 +249,7 @@ autoplot(ts_daily2010) +
 NN_model <- nnetar(ts_daily,p=1,P=0,xreg=fourier(ts_daily, K=c(2,16)))
 
 #NN_for <- forecast(NN_fit, h=365) 
-NN_for <- forecast(NN_model, h=365,xreg=fourier(ts_act_power_daily_train, 
+NN_for <- forecast(NN_model, h=365,xreg=fourier(ts_daily, 
                                           K=c(2,16),h=365))
 
 #Plot foresting results
