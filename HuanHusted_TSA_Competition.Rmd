@@ -245,10 +245,11 @@ n_for <- 59
 observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
 ARIMA_Four_scores <- accuracy(ARIMA_Four_for$mean,observed)
 print(ARIMA_Four_scores)
-```
 
 #print(ARIMA_Four_for2011$mean)
 ```
+
+
 ## Model 4 Neural Network Time Series: Forecasts 2010
 
 ```{r Model 4 2010, message=FALSE, warning=FALSE}
