@@ -282,10 +282,10 @@ print(NN_scores1)
 
 ```{r Model 4 2011, message=FALSE, warning=FALSE}
 #NN_fit <- nnetar(ts_act_power_daily_train,p=1,P=1)
-NN_model2010 <- nnetar(ts_daily2010,p=1,P=0,xreg=fourier(ts_daily2010, K=c(2,12)))
+NN_model2010 <- nnetar(ts_daily2010,lambda = 0.5,p=1,P=0,xreg=fourier(ts_daily2010, K=c(2,12)))
 
 #NN_for <- forecast(NN_fit, h=365) 
-NN_for2010 <- forecast(NN_model2010, h=59,xreg=fourier(ts_daily, 
+NN_for2010 <- forecast(NN_model2010,PI=TRUE, h=59,xreg=fourier(ts_daily, 
                                           K=c(2,12),h=59))
 
 #Plot foresting results
