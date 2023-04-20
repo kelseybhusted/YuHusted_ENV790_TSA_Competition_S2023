@@ -240,6 +240,13 @@ autoplot(ts_daily2010) +
   autolayer(ARIMA_Four_for2011, series="ARIMA_FOURIER",PI=FALSE) +
   ylab("Daily Data")
 
+#Check accuracy of model
+n_for <- 59
+observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
+ARIMA_Four_scores <- accuracy(ARIMA_Four_for$mean,observed)
+print(ARIMA_Four_scores)
+```
+
 #print(ARIMA_Four_for2011$mean)
 ```
 ## Model 4 Neural Network Time Series: Forecasts 2010
@@ -262,6 +269,7 @@ autoplot(ts_daily2010) +
   ylab("Daily_data") 
 
 #Checking error variables to decide which model fits the data the best
+n_for <- 365
 observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
 NN_scores1 <- accuracy(NN_for$mean,observed)
 print(NN_scores1)
@@ -273,7 +281,7 @@ print(NN_scores1)
 
 ```{r Model 4 2011, message=FALSE, warning=FALSE}
 #NN_fit <- nnetar(ts_act_power_daily_train,p=1,P=1)
-NN_model2010 <- nnetar(ts_daily2010,decay=0.5, maxit=150,p=1,P=0,xreg=fourier(ts_daily2010, K=c(2,12)))
+NN_model2010 <- nnetar(ts_daily2010,p=1,P=0,xreg=fourier(ts_daily2010, K=c(2,12)))
 
 #NN_for <- forecast(NN_fit, h=365) 
 NN_for2010 <- forecast(NN_model2010, h=59,xreg=fourier(ts_daily, 
@@ -287,6 +295,11 @@ autoplot(NN_for2010) +
 autoplot(ts_daily2010) +
   autolayer(NN_for2010, series="Daily_data",PI=FALSE)+
   ylab("Daily_data") 
+
+n_for <- 59
+observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
+NN_scores1 <- accuracy(NN_for2010$mean,observed)
+print(NN_scores1)
 
 print(NN_for2010$mean)
 ```
