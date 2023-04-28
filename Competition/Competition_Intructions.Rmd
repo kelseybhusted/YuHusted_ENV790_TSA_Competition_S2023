@@ -1,11 +1,13 @@
 ---
-title: "TSA: Forecasting Competition Instructions"
+title: 'TSA: Forecasting Competition Instructions'
 author: "Luana Lima"
-output: pdf_document
-always_allow_html: true
-editor_options: 
+output:
+  html_document:
+    df_print: paged
+always_allow_html: yes
+editor_options:
   chunk_output_type: console
-  markdown: 
+  markdown:
     wrap: sentence
 ---
 

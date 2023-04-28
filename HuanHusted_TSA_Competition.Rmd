@@ -304,3 +304,29 @@ print(NN_scores1)
 
 print(NN_for2010$mean)
 ```
+
+
+## Select the best model with the minimum RMSE
+
+```{r}
+
+#create data frame
+seas_scores <- as.data.frame(rbind(ETS_scores, ARIMA_Four_scores, NN_scores1))
+row.names(seas_scores) <- c("STL-ETS", "ARIMA_FOUR","NEU-NETWORK")
+
+#choose model with lowest RMSE
+best_model_index <- which.min(seas_scores[,"RMSE"])
+cat("The best model by RMSE is:", row.names(seas_scores[best_model_index,])) 
+
+
+kbl(seas_scores, 
+      caption = "Forecast Accuracy for Seasonal Data",
+      digits = array(5,ncol(seas_scores))) %>%
+  kable_styling(full_width = FALSE, position = "center") %>%
+  #highlight model with lowest RMSE
+  kable_styling(latex_options="striped", stripe_index = which.min(seas_scores[,"RMSE"]))
+
+
+```
+
+
