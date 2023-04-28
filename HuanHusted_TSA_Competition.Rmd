@@ -125,7 +125,13 @@ autoplot(ETS_model) + ylab("Forecast")
 #Plot model + observed data
 autoplot(ts_daily2010) +
   autolayer(ETS_model, series="STL Model",PI=FALSE) +
-  ylab("Daily Data")
+  ylab("Daily Demand")
+
+
+#Plot the residuals
+
+checkresiduals(ETS_model)
+
 
 #Check accuracy of model
 n_for <- 365
@@ -147,17 +153,14 @@ autoplot(ETS_model2011) + ylab("Forecast")
 #Plot model + observed data
 autoplot(ts_daily2010) +
   autolayer(ETS_model2011, series="STL Model",PI=FALSE) +
-  ylab("Daily Data")
+  ylab("Daily Demand")
 
-#Plot the residuals
-
-checkresiduals(ETS_model2011)
 
 #Check accuracy of model
 n_for <- 59
-observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
-ETS_scores <- accuracy(ETS_model2011$mean,observed)
-print(ETS_scores)
+observed <- df_processed2010[(nobs-n_for+1):nobs, "Daily_data"]
+ETS_scores_for <- accuracy(ETS_model2011$mean,observed)
+print(ETS_scores_for)
 ```
 
 
@@ -170,10 +173,10 @@ print(ETS_scores)
 TBATS_model <-  tbats(ts_daily)
 
 #forecast
-TBATS_for <- forecast(TBATS_model,h=356)
+TBATS_for <- forecast(TBATS_model,h=365)
 
 #Plot foresting
-autoplot(TBATS_model) + ylab("Forecast")
+autoplot(TBATS_for) + ylab("Forecast")
 
 #Plot the residuals
 
@@ -182,10 +185,50 @@ checkresiduals(TBATS_model)
 #Plot model + observed data
 autoplot(ts_daily2010) +
   autolayer(TBATS_for, series="TBATS Model",PI=FALSE) +
-  ylab("Daily Data")
+  ylab("Daily Demand")
+
+
+#Check accuracy of model
+n_for <- 365
+observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
+TBATS_scores <- accuracy(TBATS_for$mean,observed)
+print(TBATS_scores)
+
 
 
 ```
+
+## Model 2 TBATS: Forecast 2011
+
+
+```{r}
+#Fit and forecast TBATS model 
+TBATS_model2011 <-  tbats(ts_daily2010)
+
+#forecast
+TBATS_for2011 <- forecast(TBATS_model2011,h=59)
+
+#Plot foresting
+autoplot(TBATS_for2011) + ylab("Forecast")
+
+#Plot the residuals
+
+checkresiduals(TBATS_model2011)
+
+#Plot model + observed data
+autoplot(ts_daily2010) +
+  autolayer(TBATS_for2011, series="TBATS Model",PI=FALSE) +
+  ylab("Daily Demand")
+
+
+#Check accuracy of model
+n_for <- 59
+observed <- df_processed2010[(nobs-n_for+1):nobs, "Daily_data"]
+TBATS_scores_for <- accuracy(TBATS_for$mean,observed)
+print(TBATS_scores_for)
+```
+
+
 
 ## Model 3 ARIMA + FOURIER terms: Forecast 2010
 
@@ -207,12 +250,16 @@ ARIMA_Four_for <- forecast(ARIMA_Four_model,
                            ) 
 
 #Plot foresting results
-autoplot(ARIMA_Four_for) + ylab("Daily Data")
+autoplot(ARIMA_Four_for) + ylab("Daily Demand")
 
 #Plot model + observed data
 autoplot(ts_daily2010) +
   autolayer(ARIMA_Four_for, series="ARIMA_FOURIER",PI=FALSE) +
-  ylab("Daily Data")
+  ylab("Daily Demand")
+
+# Plot the residuals
+
+checkresiduals(ARIMA_Four_model)
 
 #Check accuracy of model
 n_for <- 365
@@ -241,23 +288,20 @@ ARIMA_Four_for2011 <- forecast(ARIMA_Four_model2011,
                            ) 
 
 #Plot foresting results
-autoplot(ARIMA_Four_for2011) + ylab("Daily Data")
+autoplot(ARIMA_Four_for2011) + ylab("Daily Demand")
 
 #Plot model + observed data
 autoplot(ts_daily2010) +
   autolayer(ARIMA_Four_for2011, series="ARIMA_FOURIER",PI=FALSE) +
-  ylab("Daily Data")
+  ylab("Daily Demand")
 
-# Plot the residuals
-
-checkresiduals(ARIMA_Four_model2011)
 
 
 #Check accuracy of model
 n_for <- 59
-observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
-ARIMA_Four_scores <- accuracy(ARIMA_Four_for$mean,observed)
-print(ARIMA_Four_scores)
+observed <- df_processed2010[(nobs-n_for+1):nobs, "Daily_data"]
+ARIMA_Four_scores_for <- accuracy(ARIMA_Four_for$mean,observed)
+print(ARIMA_Four_scores_for)
 
 #print(ARIMA_Four_for2011$mean)
 ```
@@ -275,12 +319,14 @@ NN_for <- forecast(NN_model, h=365,xreg=fourier(ts_daily,
 
 #Plot foresting results
 autoplot(NN_for) +
-  ylab("Daily_data") 
+  ylab("Daily Demand") 
 
 #Plot model + observed data
 autoplot(ts_daily2010) +
-  autolayer(NN_for, series="Daily_data",PI=FALSE)+
-  ylab("Daily_data") 
+  autolayer(NN_for, series="Daily Demand",PI=FALSE)+
+  ylab("Daily Demand") 
+
+checkresiduals(NN_model)
 
 #Checking error variables to decide which model fits the data the best
 n_for <- 365
@@ -303,30 +349,31 @@ NN_for2010 <- forecast(NN_model2010,PI=TRUE, h=59,xreg=fourier(ts_daily,
 
 #Plot foresting results
 autoplot(NN_for2010) +
-  ylab("Daily_data") 
+  ylab("Daily Demand") 
 
 #Plot model + observed data
 autoplot(ts_daily2010) +
   autolayer(NN_for2010, series="Daily_data",PI=FALSE)+
-  ylab("Daily_data") 
+  ylab("Daily Demand") 
 
 n_for <- 59
-observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
-NN_scores1 <- accuracy(NN_for2010$mean,observed)
-print(NN_scores1)
+observed <- df_processed2010[(nobs-n_for+1):nobs, "Daily_data"]
+NN_scores1_for <- accuracy(NN_for2010$mean,observed)
+print(NN_scores1_for)
 
 
 print(NN_for2010$mean)
+
 ```
 
 
-## Select the best model with the minimum RMSE
+## Compare performance matrix
 
 ```{r}
 
 #create data frame
-seas_scores <- as.data.frame(rbind(ETS_scores, ARIMA_Four_scores, NN_scores1))
-row.names(seas_scores) <- c("STL-ETS", "ARIMA_FOUR","NEU-NETWORK")
+seas_scores <- as.data.frame(rbind(ETS_scores, TBATS_scores, ARIMA_Four_scores, NN_scores1))
+row.names(seas_scores) <- c("STL-ETS","TBATS", "ARIMA_FOUR","NEU-NETWORK")
 
 #choose model with lowest RMSE
 best_model_index <- which.min(seas_scores[,"RMSE"])
