@@ -1,6 +1,6 @@
 ---
 title: "HuanHusted_TSA_Competition"
-author: "Kelsey Husted"
+author: "Kelsey Husted & Yu Huan"
 date: "2023-03-31"
 output: pdf_document
 ---
@@ -139,6 +139,33 @@ observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
 ETS_scores <- accuracy(ETS_model$mean,observed)
 print(ETS_scores)
 
+# Changed forecast
+
+#Fit and forecast STL model 
+ETS_model <-  stlf(ts_daily,h=59)
+
+#Plot foresting
+autoplot(ETS_model) + ylab("Forecast")
+
+#Plot model + observed data
+autoplot(ts_daily2010) +
+  autolayer(ETS_model, series="STL Model",PI=FALSE) +
+  ylab("Daily Demand")
+
+
+#Plot the residuals
+
+checkresiduals(ETS_model)
+
+
+#Check accuracy of model
+n_for <- 59
+observed <- df_processed2010[1827:1885, "Daily_data"]
+ETS_scores <- accuracy(ETS_model$mean,observed)
+print(ETS_scores)
+
+
+
 ```
 
 ## Model 1 STL + ETS: Forecast 2011
@@ -191,6 +218,33 @@ autoplot(ts_daily2010) +
 #Check accuracy of model
 n_for <- 365
 observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
+TBATS_scores <- accuracy(TBATS_for$mean,observed)
+print(TBATS_scores)
+
+# Changed version
+
+#Fit and forecast TBATS model 
+TBATS_model <-  tbats(ts_daily)
+
+#forecast
+TBATS_for <- forecast(TBATS_model,h=59)
+
+#Plot foresting
+autoplot(TBATS_for) + ylab("Forecast")
+
+#Plot the residuals
+
+checkresiduals(TBATS_model)
+
+#Plot model + observed data
+autoplot(ts_daily2010) +
+  autolayer(TBATS_for, series="TBATS Model",PI=FALSE) +
+  ylab("Daily Demand")
+
+
+#Check accuracy of model
+n_for <- 59
+observed <- df_processed2010[1827:1885, "Daily_data"]
 TBATS_scores <- accuracy(TBATS_for$mean,observed)
 print(TBATS_scores)
 
@@ -266,6 +320,43 @@ n_for <- 365
 observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
 ARIMA_Four_scores <- accuracy(ARIMA_Four_for$mean,observed)
 print(ARIMA_Four_scores)
+
+
+# Changed version 
+
+ARIMA_Four_model <- auto.arima(ts_daily, 
+                             seasonal=FALSE, 
+                             lambda=0,
+                             xreg=fourier(ts_daily, 
+                                          K=c(2,12))
+                             )
+
+#Forecast
+ARIMA_Four_for <- forecast(ARIMA_Four_model,
+                           xreg=fourier(ts_daily,
+                                        K=c(2,12),
+                                        h=59),
+                           h=59
+                           ) 
+
+#Plot foresting results
+autoplot(ARIMA_Four_for) + ylab("Daily Demand")
+
+#Plot model + observed data
+autoplot(ts_daily2010) +
+  autolayer(ARIMA_Four_for, series="ARIMA_FOURIER",PI=FALSE) +
+  ylab("Daily Demand")
+
+# Plot the residuals
+
+checkresiduals(ARIMA_Four_model)
+
+#Check accuracy of model
+n_for <- 59
+observed <- df_processed2010[1827:1885, "Daily_data"]
+ARIMA_Four_scores <- accuracy(ARIMA_Four_for$mean,observed)
+print(ARIMA_Four_scores)
+
 ```
 
 ## Model 3 ARIMA + FOURIER terms: Forecast 2011
@@ -333,6 +424,35 @@ n_for <- 365
 observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
 NN_scores1 <- accuracy(NN_for$mean,observed)
 print(NN_scores1)
+
+
+# Changed version
+
+NN_model <- nnetar(ts_daily,decay=0.5, maxit=150, p=1,P=0,xreg=fourier(ts_daily, K=c(2,12)))
+
+#NN_for <- forecast(NN_fit, h=365) 
+NN_for <- forecast(NN_model, h=59,xreg=fourier(ts_daily, 
+                                          K=c(2,12),h=59))
+
+#Plot foresting results
+autoplot(NN_for) +
+  ylab("Daily Demand") 
+
+#Plot model + observed data
+autoplot(ts_daily2010) +
+  autolayer(NN_for, series="Daily Demand",PI=FALSE)+
+  ylab("Daily Demand") 
+
+checkresiduals(NN_model)
+
+#Checking error variables to decide which model fits the data the best
+n_for <- 59
+observed <- df_processed2010[1827:1885, "Daily_data"]
+NN_scores1 <- accuracy(NN_for$mean,observed)
+print(NN_scores1)
+
+
+
 ```
 
 ## Model 4 Neural Network Time Series: Forecasts 2011
