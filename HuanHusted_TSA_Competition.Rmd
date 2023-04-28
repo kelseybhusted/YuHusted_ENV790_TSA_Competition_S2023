@@ -149,6 +149,10 @@ autoplot(ts_daily2010) +
   autolayer(ETS_model2011, series="STL Model",PI=FALSE) +
   ylab("Daily Data")
 
+#Plot the residuals
+
+checkresiduals(ETS_model2011)
+
 #Check accuracy of model
 n_for <- 59
 observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
@@ -170,6 +174,10 @@ TBATS_for <- forecast(TBATS_model,h=356)
 
 #Plot foresting
 autoplot(TBATS_model) + ylab("Forecast")
+
+#Plot the residuals
+
+checkresiduals(TBATS_model)
 
 #Plot model + observed data
 autoplot(ts_daily2010) +
@@ -240,6 +248,11 @@ autoplot(ts_daily2010) +
   autolayer(ARIMA_Four_for2011, series="ARIMA_FOURIER",PI=FALSE) +
   ylab("Daily Data")
 
+# Plot the residuals
+
+checkresiduals(ARIMA_Four_model2011)
+
+
 #Check accuracy of model
 n_for <- 59
 observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
@@ -301,6 +314,7 @@ n_for <- 59
 observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
 NN_scores1 <- accuracy(NN_for2010$mean,observed)
 print(NN_scores1)
+
 
 print(NN_for2010$mean)
 ```
