@@ -37,6 +37,10 @@ Hourly data was transformed into daily data with aggregate functions and pipes (
 #Import data
 df <- read_xlsx("./Competition/Data/load.xlsx")
 
+df_T <- read_xlsx("./Competition/Data/temperature.xlsx")
+
+df_H <- read_xlsx("./Competition/Data/relative_humidity.xlsx")
+
 #Wrangle data from hourly to daily
 #Wrangling date column 2005 to 2009
 df_daily <- df %>%
@@ -108,7 +112,6 @@ ts_daily2010_test <- msts(df_processed2010$Daily_data[1:1885],
                  seasonal.periods=c(7,365.25),
                  start=c(2005, 01, 01))
 
-
 ```
 
 ## Time series decomposition and plot
@@ -124,27 +127,17 @@ plot(ts_decompose)
 ## Model 1 STL + ETS: Forecast 2010
 
 ```{r Model 1, message=FALSE, warning=FALSE}
-#Fit and forecast STL model in 2010
-ETS_model <-  stlf(ts_daily,h=365)
-
-# Forcast just first two month of 2010
-ETS_model_month <-  stlf(ts_daily,h=365)
+#Fit and forecast STL model 
+ETS_model <-  stlf(ts_daily,h=59)
 
 #Plot foresting
 autoplot(ETS_model) + ylab("Forecast")
 
-#Plot foresting
-autoplot(ETS_model_month) + ylab("Forecast")
-
 #Plot model + observed data
-autoplot(ts_daily2010) +
+autoplot(ts_daily2010_test) +
   autolayer(ETS_model, series="STL Model",PI=FALSE) +
   ylab("Daily Demand")
 
-#Plot model + observed data
-autoplot(ts_daily2010_test) +
-  autolayer(ETS_model_month, series="STL Model",PI=FALSE) +
-  ylab("Daily Demand")
 
 #Plot the residuals
 
@@ -152,18 +145,12 @@ checkresiduals(ETS_model)
 
 
 #Check accuracy of model
-n_for <- 365
-observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
+n_for <- 59
+observed <- df_processed2010[1827:1885, "Daily_data"]
 ETS_scores <- accuracy(ETS_model$mean,observed)
 print(ETS_scores)
 
 
-
-#Check accuracy of the model using just the first two month of 2010
-n_for <- 59
-observed <- df_processed2010[1827:1885, "Daily_data"]
-ETS_scores_for <- accuracy(ETS_model_month$mean,observed)
-print(ETS_scores_for)
 
 
 ```
@@ -183,7 +170,6 @@ autoplot(ts_daily2010) +
   ylab("Daily Demand")
 
 
-
 ```
 
 
@@ -195,44 +181,28 @@ autoplot(ts_daily2010) +
 #Fit and forecast TBATS model 
 TBATS_model <-  tbats(ts_daily)
 
-#forecast 2010
-TBATS_for <- forecast(TBATS_model,h=365)
-
-#forecast just first two month in 2010
-TBATS_for_month <- forecast(TBATS_model,h=59)
-
+#forecast
+TBATS_for <- forecast(TBATS_model,h=59)
 
 #Plot foresting
 autoplot(TBATS_for) + ylab("Forecast")
-
-#Plot foresting
-autoplot(TBATS_for_month) + ylab("Forecast")
 
 #Plot the residuals
 
 checkresiduals(TBATS_model)
 
 #Plot model + observed data
-autoplot(ts_daily2010) +
+autoplot(ts_daily2010_test) +
   autolayer(TBATS_for, series="TBATS Model",PI=FALSE) +
   ylab("Daily Demand")
 
-#Plot model + observed data
-autoplot(ts_daily2010_test) +
-  autolayer(TBATS_for_month, series="TBATS Model",PI=FALSE) +
-  ylab("Daily Demand")
 
 #Check accuracy of model
-n_for <- 365
-observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
+n_for <- 59
+observed <- df_processed2010[1827:1885, "Daily_data"]
 TBATS_scores <- accuracy(TBATS_for$mean,observed)
 print(TBATS_scores)
 
-#Check accuracy of the model using just the first two month of 2010
-n_for <- 59
-observed <- df_processed2010[1827:1885, "Daily_data"]
-TBATS_scores_for <- accuracy(TBATS_for_month$mean,observed)
-print(TBATS_scores_for)
 
 ```
 
@@ -259,9 +229,6 @@ autoplot(ts_daily2010) +
   ylab("Daily Demand")
 
 
-
-
-
 ```
 
 
@@ -277,37 +244,20 @@ ARIMA_Four_model <- auto.arima(ts_daily,
                                           K=c(2,12))
                              )
 
-#Forecast in 2010
+#Forecast
 ARIMA_Four_for <- forecast(ARIMA_Four_model,
-                           xreg=fourier(ts_daily,
-                                        K=c(2,12),
-                                        h=365),
-                           h=365
-                           ) 
-
-#Forecast just first two month in 2010
-ARIMA_Four_for_month <- forecast(ARIMA_Four_model,
                            xreg=fourier(ts_daily,
                                         K=c(2,12),
                                         h=59),
                            h=59
                            ) 
 
-
 #Plot foresting results
 autoplot(ARIMA_Four_for) + ylab("Daily Demand")
 
-#Plot foresting results
-autoplot(ARIMA_Four_for_month) + ylab("Daily Demand")
-
-#Plot model + observed data
-autoplot(ts_daily2010) +
-  autolayer(ARIMA_Four_for, series="ARIMA_FOURIER",PI=FALSE) +
-  ylab("Daily Demand")
-
 #Plot model + observed data
 autoplot(ts_daily2010_test) +
-  autolayer(ARIMA_Four_for_month, series="ARIMA_FOURIER",PI=FALSE) +
+  autolayer(ARIMA_Four_for, series="ARIMA_FOURIER",PI=FALSE) +
   ylab("Daily Demand")
 
 # Plot the residuals
@@ -315,17 +265,11 @@ autoplot(ts_daily2010_test) +
 checkresiduals(ARIMA_Four_model)
 
 #Check accuracy of model
-n_for <- 365
-observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
+n_for <- 59
+observed <- df_processed2010[1827:1885, "Daily_data"]
 ARIMA_Four_scores <- accuracy(ARIMA_Four_for$mean,observed)
 print(ARIMA_Four_scores)
 
-
-#Check accuracy of the model using just the first two month of 2010
-n_for <- 59
-observed <- df_processed2010[1827:1885, "Daily_data"]
-ARIMA_Four_scores_for <- accuracy(ARIMA_Four_for_month$mean,observed)
-print(ARIMA_Four_scores_for)
 
 
 ```
@@ -360,8 +304,7 @@ autoplot(ts_daily2010) +
 
 
 
-
-
+#print(ARIMA_Four_for2011$mean)
 ```
 
 
@@ -372,45 +315,25 @@ autoplot(ts_daily2010) +
 NN_model <- nnetar(ts_daily,decay=0.5, maxit=150, p=1,P=0,xreg=fourier(ts_daily, K=c(2,12)))
 
 #NN_for <- forecast(NN_fit, h=365) 
-NN_for <- forecast(NN_model, h=365,xreg=fourier(ts_daily, 
-                                          K=c(2,12),h=365))
-#NN_for <- forecast(NN_fit, h=365) 
-NN_for_month <- forecast(NN_model, h=59,xreg=fourier(ts_daily, 
+NN_for <- forecast(NN_model, h=59,xreg=fourier(ts_daily, 
                                           K=c(2,12),h=59))
 
 #Plot foresting results
 autoplot(NN_for) +
   ylab("Daily Demand") 
 
-#Plot foresting results
-autoplot(NN_for_month) +
-  ylab("Daily Demand") 
-
 #Plot model + observed data
-autoplot(ts_daily2010) +
+autoplot(ts_daily2010_test) +
   autolayer(NN_for, series="Daily Demand",PI=FALSE)+
   ylab("Daily Demand") 
 
-#Plot model + observed data using just first two month
-autoplot(ts_daily2010_test) +
-  autolayer(NN_for_month, series="Daily Demand",PI=FALSE)+
-  ylab("Daily Demand") 
-
-# Check residuals
 checkresiduals(NN_model)
 
 #Checking error variables to decide which model fits the data the best
-n_for <- 365
-observed <- df_processed[(nobs-n_for+1):nobs, "Daily_data"]
-NN_scores1 <- accuracy(NN_for$mean,observed)
-print(NN_scores1)
-
-
-#Check accuracy of the model using just the first two month of 2010
 n_for <- 59
 observed <- df_processed2010[1827:1885, "Daily_data"]
-NN_scores1_for <- accuracy(NN_for_month$mean,observed)
-print(NN_scores1_for)
+NN_scores1 <- accuracy(NN_for$mean,observed)
+print(NN_scores1)
 
 
 
@@ -437,10 +360,12 @@ autoplot(ts_daily2010) +
   autolayer(NN_for2010, series="Daily_data",PI=FALSE)+
   ylab("Daily Demand") 
 
-n_for <- 59
-observed <- df_processed2010[(nobs-n_for+1):nobs, "Daily_data"]
-NN_scores1_for <- accuracy(NN_for2010$mean,observed)
-print(NN_scores1_for)
+
+
+print(NN_for2010$mean)
+
+print(ARIMA_Four_for2011$mean)
+
 
 
 
@@ -467,21 +392,6 @@ kbl(seas_scores,
   kable_styling(full_width = FALSE, position = "center") %>%
   #highlight model with lowest RMSE
   kable_styling(latex_options="striped", stripe_index = which.min(seas_scores[,"RMSE"]))
-
-
-```
-
-According to the comparison matrics the best model is the neural Network model
-
-The predicted result from Neural Network is as follows:
-
-```{r}
-
-print(NN_for2010$mean)
-
-print(ARIMA_Four_for2011$mean)
-
-print(TBATS_for2011$mean)
 
 
 ```
