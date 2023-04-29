@@ -102,7 +102,7 @@ ts_daily2010 <- msts(df_processed2010$Daily_data,
                  seasonal.periods=c(7,365.25),
                  start=c(2005, 01, 01))
 
-#ts for accuracy test visalization
+#ts for accuracy test visualization
 
 ts_daily2010_test <- msts(df_processed2010$Daily_data[1:1885],
                  seasonal.periods=c(7,365.25),
@@ -128,7 +128,7 @@ plot(ts_decompose)
 ETS_model <-  stlf(ts_daily,h=365)
 
 # Forcast just first two month of 2010
-ETS_model_month <-  stlf(ts_daily,h=365)
+ETS_model_month <-  stlf(ts_daily,h=59)
 
 #Plot foresting
 autoplot(ETS_model) + ylab("Forecast")
@@ -368,15 +368,14 @@ autoplot(ts_daily2010) +
 ## Model 4 Neural Network Time Series: Forecasts 2010
 
 ```{r Model 4 2010, message=FALSE, warning=FALSE}
-#NN_fit <- nnetar(ts_act_power_daily_train,p=1,P=1)
-NN_model <- nnetar(ts_daily,decay=0.5, maxit=150, p=1,P=0,xreg=fourier(ts_daily, K=c(2,12)))
+#NN_fit <- nnetar(ts_daily,p=1,P=1)
+NN_model <- nnetar(ts_daily,decay=7, maxit=150, p=1,P=0,xreg=fourier(ts_daily, K=c(3,2)))
 
 #NN_for <- forecast(NN_fit, h=365) 
 NN_for <- forecast(NN_model, h=365,xreg=fourier(ts_daily, 
-                                          K=c(2,12),h=365))
-#NN_for <- forecast(NN_fit, h=365) 
-NN_for_month <- forecast(NN_model, h=59,xreg=fourier(ts_daily, 
-                                          K=c(2,12),h=59))
+                                          K=c(3,2),h=365))
+#NN_for <- forecast(NN_fit, h=59) 
+NN_for_month <- forecast(NN_model, h=59,xreg=fourier(ts_daily, K=c(3,2) ,h=59))
 
 #Plot foresting results
 autoplot(NN_for) +
@@ -422,11 +421,11 @@ print(NN_scores1_for)
 
 ```{r Model 4 2011, message=FALSE, warning=FALSE}
 #NN_fit <- nnetar(ts_act_power_daily_train,p=1,P=1)
-NN_model2010 <- nnetar(ts_daily2010,lambda = 0.5,p=1,P=0,xreg=fourier(ts_daily2010, K=c(2,12)))
+NN_model2010 <- nnetar(ts_daily2010,decay=7, maxit=150,p=1,P=0,xreg=fourier(ts_daily2010, K=c(3,2)))
 
 #NN_for <- forecast(NN_fit, h=365) 
 NN_for2010 <- forecast(NN_model2010,PI=TRUE, h=59,xreg=fourier(ts_daily, 
-                                          K=c(2,12),h=59))
+                                          K=c(3,2),h=59))
 
 #Plot foresting results
 autoplot(NN_for2010) +
@@ -436,11 +435,6 @@ autoplot(NN_for2010) +
 autoplot(ts_daily2010) +
   autolayer(NN_for2010, series="Daily_data",PI=FALSE)+
   ylab("Daily Demand") 
-
-n_for <- 59
-observed <- df_processed2010[(nobs-n_for+1):nobs, "Daily_data"]
-NN_scores1_for <- accuracy(NN_for2010$mean,observed)
-print(NN_scores1_for)
 
 
 
@@ -452,11 +446,11 @@ print(NN_scores1_for)
 
 ```{r}
 
-#create data frame
-seas_scores <- as.data.frame(rbind(ETS_scores, TBATS_scores, ARIMA_Four_scores, NN_scores1))
+#Create data frame using the accuracy test score for only the first two month in 2010
+seas_scores <- as.data.frame(rbind(ETS_scores_for, TBATS_scores_for, ARIMA_Four_scores_for, NN_scores1_for))
 row.names(seas_scores) <- c("STL-ETS","TBATS", "ARIMA_FOUR","NEU-NETWORK")
 
-#choose model with lowest RMSE
+#Choose model with lowest RMSE
 best_model_index <- which.min(seas_scores[,"RMSE"])
 cat("The best model by RMSE is:", row.names(seas_scores[best_model_index,])) 
 
@@ -478,10 +472,6 @@ The predicted result from Neural Network is as follows:
 ```{r}
 
 print(NN_for2010$mean)
-
-print(ARIMA_Four_for2011$mean)
-
-print(TBATS_for2011$mean)
 
 
 ```
